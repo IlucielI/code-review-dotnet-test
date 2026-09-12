@@ -33,6 +33,9 @@ Benchmark test suite for automated code review engines on enterprise ASP.NET Cor
 | `AuthService.cs` | Hardcoded JWT Secret Key & Console Credential Logging | Information Disclosure | CWE-798 / CWE-532 | High | **BLOCKING** |
 | `AccountController.cs` | Open Redirect via unvalidated destination in `Redirect()` | Redirection | CWE-601 | Medium | **BLOCKING** |
 | `OrderController.cs` | IDOR on order deletion without tenant/user ownership check | Broken Access Control | CWE-639 | High | **BLOCKING** |
+| `CorsSetup.cs` | Wildcard \`AllowAnyOrigin()\` with \`AllowCredentials()\` | CORS Misconfiguration | CWE-942 | High | **BLOCKING** |
+| `XmlService.cs` | XML parser without DTD expansion prohibition (XXE) | Injection / XXE | CWE-611 | High | **BLOCKING** |
+| `AuthController.cs` | Cookie set without \`HttpOnly\` and \`Secure\`, and login route without rate limiting | Insecure Cookie / Rate Limit | CWE-614 / CWE-307 | Medium | **NON-BLOCKING** |
 
 ### ⚡ Performance & ORM Bottlenecks
 
@@ -47,7 +50,7 @@ Benchmark test suite for automated code review engines on enterprise ASP.NET Cor
 
 | File | Safe Pattern Implemented | Expected Reviewer Result |
 | :--- | :--- | :---: |
-| `SafeGuardController.cs` | `FromSqlInterpolated` parameterized binding, `Url.IsLocalUrl()` redirect check, `[Bind]` attribute overposting guard, `AsNoTracking()` | **0 False Positives** (Clean) |
+| `SafeGuardController.cs` | `FromSqlInterpolated` parameterized binding, `Url.IsLocalUrl()` redirect check, `[Bind]` attribute overposting guard, `AsNoTracking()`, safe XML reader (`DtdProcessing.Prohibit`), hardened `HttpOnly`/`Secure` cookies | **0 False Positives** (Clean) |
 
 ---
 
@@ -70,6 +73,6 @@ curl -X POST http://localhost:8081/api/v1/review/trigger \
 
 ## 📊 Benchmark Validation Results
 
-- **Detection Rate:** 10 / 10 (100%)
+- **Detection Rate:** 14 / 14 (100%)
 - **False Positive Rate:** 0 / 1 (`SafeGuardController.cs` completely passed)
 - **False Negative Rate:** 0%
